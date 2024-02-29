@@ -54,12 +54,13 @@ adjacent(R, C, R, CC) :- row(R), col(C), col(CC), CC = C-1.
 :- tent(R, C), tent(R-1, C+1), row(R), row(R-1), col(C), col(C+1).
 
 :- tent(R, C), { tree(RT, CT) : adjacent(R, C, RT, CT) }<1.
-
-tent_count_per_tree(RT, CT, Count) :- tree(RT, CT), Count = #count { R, C : tent(R, C), adjacent(R, C, RT, CT) }.
-:- tent_count_per_tree(RT, CT, Count), Count > 1, tent(R, C), tent(R2, C2), 
-   adjacent(R, C, RT, CT), adjacent(R2, C2, RT, CT), (R, C) != (R2, C2),
-   not 1 { tree(RT2, CT2) : adjacent(R, C, RT2, CT2), (RT2, CT2) != (RT, CT) },
-   not 1 { tree(RT3, CT3) : adjacent(R2, C2, RT3, CT3), (RT3, CT3) != (RT, CT) }.
+tent_to_one_tree(R, C) :-
+    tent(R, C), 
+    #count { RT2, CT2 : adjacent(R, C, RT2, CT2),
+    tree(RT2, CT2) } = 1.
+:- tent_count_per_tree(RT, CT, Count), Count > 1, 
+   #count { R, C : tent_to_one_tree(R, C),
+   adjacent(R, C, RT, CT) } > 1.
 """
 result = []
 answers = ASP(asp)
